@@ -53,7 +53,7 @@ def vime_self (x_unlab, p_m, alpha, parameters):
   model.compile(optimizer='rmsprop',
                 loss={'mask': 'binary_crossentropy', 
                       'feature': 'mean_squared_error'},
-                loss_weights={'mask':1, 'feature':alpha})
+                loss_weights={'mask':1.0, 'feature':alpha})
   
   # Generate corrupted samples
   m_unlab = mask_generator(p_m, x_unlab)

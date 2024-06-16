@@ -17,7 +17,9 @@ vime_semi.py
 import keras
 import numpy as np
 import tensorflow as tf
-from tensorflow.contrib import layers as contrib_layers
+# from tensorflow.contrib import layers as contrib_layers
+# if using tensorflow 2.0, use the following
+from tensorflow.keras import layers as contrib_layers
 
 from vime_utils import mask_generator, pretext_generator
 
@@ -63,11 +65,16 @@ def vime_semi(x_train, y_train, x_unlab, x_test, parameters,
 
   # Input placeholder
   # Labeled data
-  x_input = tf.placeholder(tf.float32, [None, data_dim])
-  y_input = tf.placeholder(tf.float32, [None, label_dim])
+  #x_input = tf.placeholder(tf.float32, [None, data_dim])
+  #y_input = tf.placeholder(tf.float32, [None, label_dim])
   
   # Augmented unlabeled data
-  xu_input = tf.placeholder(tf.float32, [None, None, data_dim])
+  #xu_input = tf.placeholder(tf.float32, [None, None, data_dim])
+
+  # in tensorflow 2.0, use the following
+  x_input = tf.keras.Input(shape=(data_dim,))
+  y_input = tf.keras.Input(shape=(label_dim,))
+  xu_input = tf.keras.Input(shape=(None, data_dim))
   
   ## Predictor
   def predictor(x_input):
@@ -80,18 +87,25 @@ def vime_semi(x_train, y_train, x_unlab, x_test, parameters,
       - y_hat_logit: logit prediction
       - y_hat: prediction
     """
+    # if using tensorflow 2.0, use the following
     with tf.variable_scope('predictor', reuse=tf.AUTO_REUSE):     
       # Stacks multi-layered perceptron
-      inter_layer = contrib_layers.fully_connected(x_input, 
-                                                   hidden_dim, 
-                                                   activation_fn=act_fn)
-      inter_layer = contrib_layers.fully_connected(inter_layer, 
-                                                   hidden_dim, 
-                                                   activation_fn=act_fn)
+      #inter_layer = contrib_layers.fully_connected(x_input, 
+      #                                             hidden_dim, 
+       #                                            activation_fn=act_fn)
+      #inter_layer = contrib_layers.fully_connected(inter_layer, 
+        #                                           hidden_dim, 
+         #                                          activation_fn=act_fn)
 
-      y_hat_logit = contrib_layers.fully_connected(inter_layer, 
-                                                   label_dim, 
-                                                   activation_fn=None)
+      #y_hat_logit = contrib_layers.fully_connected(inter_layer, 
+          #                                         label_dim, 
+           #                                        activation_fn=None)
+      #y_hat = tf.nn.softmax(y_hat_logit)
+
+      # if using tensorflow 2.0, use the following
+      inter_layer = contrib_layers.Dense(hidden_dim, activation=act_fn)(x_input)
+      inter_layer = contrib_layers.Dense(hidden_dim, activation=act_fn)(inter_layer)
+      y_hat_logit = contrib_layers.Dense(label_dim, activation=None)(inter_layer)
       y_hat = tf.nn.softmax(y_hat_logit)
 
     return y_hat_logit, y_hat

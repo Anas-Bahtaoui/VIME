@@ -1,0 +1,15 @@
+# Ignore the virtual environment directory
+venv/
+
+# Ignore Python cache files
+__pycache__/
+
+# ignore ipynb checkpoints
+.ipynb_checkpoints/
+
+# ignore save_model
+save_model/
+
+# ignot best_predictor.weights.h5
+
+best_predictor.weights.h5
